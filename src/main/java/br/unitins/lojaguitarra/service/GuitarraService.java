@@ -10,5 +10,9 @@ public interface GuitarraService {
     void delete(Long id);
     Guitarra findById(Long id);
     List<Guitarra> findByNome(String nome);
+    List<Guitarra> findByMarca(String marca);
+    List<Guitarra> findByModelo(String modelo);
+    List<Guitarra> findByCor(String cor);
+    List<Guitarra> findByPreco(Double min, Double max);
     List<Guitarra> findAll();
 }

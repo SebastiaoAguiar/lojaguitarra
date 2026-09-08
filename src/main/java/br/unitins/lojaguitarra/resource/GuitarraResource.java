@@ -40,6 +40,30 @@ public class GuitarraResource {
         return service.findByNome(nome);
     }
 
+    @GET
+    @Path("/marca/{marca}")
+    public List<Guitarra> buscarPorMarca(@PathParam("marca") String marca) {
+        return service.findByMarca(marca);
+    }
+
+    @GET
+    @Path("/modelo/{modelo}")
+    public List<Guitarra> buscarPorModelo(@PathParam("modelo") String modelo) {
+        return service.findByModelo(modelo);
+    }
+
+    @GET
+    @Path("/cor/{cor}")
+    public List<Guitarra> buscarPorCor(@PathParam("cor") String cor) {
+        return service.findByCor(cor);
+    }
+
+    @GET
+    @Path("/preco/{min}/{max}")
+    public List<Guitarra> buscarPorPreco(@PathParam("min") Double min, @PathParam("max") Double max) {
+        return service.findByPreco(min, max);
+    }
+
     @POST
     public Guitarra inserir(Guitarra guitarra) {
         return service.create(guitarra);

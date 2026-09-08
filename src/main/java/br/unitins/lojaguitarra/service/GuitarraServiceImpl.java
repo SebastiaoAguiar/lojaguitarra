@@ -52,6 +52,26 @@ public class GuitarraServiceImpl implements GuitarraService {
     }
 
     @Override
+    public List<Guitarra> findByMarca(String marca) {
+        return repository.findByMarca(marca);
+    }
+
+    @Override
+    public List<Guitarra> findByModelo(String modelo) {
+        return repository.findByModelo(modelo);
+    }
+
+    @Override
+    public List<Guitarra> findByCor(String cor) {
+        return repository.findByCor(cor);
+    }
+
+    @Override
+    public List<Guitarra> findByPreco(Double min, Double max) {
+        return repository.findByPreco(min, max);
+    }
+
+    @Override
     public List<Guitarra> findAll() {
         return repository.listAll();
     }
