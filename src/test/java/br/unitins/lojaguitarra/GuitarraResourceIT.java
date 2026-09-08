@@ -1,8 +1,8 @@
-package br.unitins.tp1;
+package br.unitins.lojaguitarra;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest
-class GreetingResourceIT extends GreetingResourceTest {
+class GuitarraResourceIT extends GuitarraResourceTest {
     // Execute the same tests but in packaged mode.
 }

@@ -1,9 +1,9 @@
-package br.unitins.tp1.resource;
+package br.unitins.lojaguitarra.resource;
 
 import java.util.List;
 
-import br.unitins.tp1.model.Estado;
-import br.unitins.tp1.service.EstadoService;
+import br.unitins.lojaguitarra.model.Guitarra;
+import br.unitins.lojaguitarra.service.GuitarraService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -15,40 +15,40 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/estados")
+@Path("/guitarras")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class EstadoResource {
+public class GuitarraResource {
 
     @Inject
-    EstadoService service;
+    GuitarraService service;
 
     @GET
-    public List<Estado> listar() {
+    public List<Guitarra> listar() {
         return service.findAll();
     }
 
     @GET
     @Path("/{id}")
-    public Estado buscarPorId(@PathParam("id") Long id) {
+    public Guitarra buscarPorId(@PathParam("id") Long id) {
         return service.findById(id);
     }
 
     @GET
     @Path("/nome/{nome}")
-    public List<Estado> buscarPorNome(@PathParam("nome") String nome) {
+    public List<Guitarra> buscarPorNome(@PathParam("nome") String nome) {
         return service.findByNome(nome);
     }
 
     @POST
-    public Estado inserir(Estado estado) {
-        return service.create(estado);
+    public Guitarra inserir(Guitarra guitarra) {
+        return service.create(guitarra);
     } 
 
     @PUT
     @Path("/{id}")
-    public void atualizar(@PathParam("id") Long id, Estado estado) {
-       service.update(id, estado);
+    public void atualizar(@PathParam("id") Long id, Guitarra guitarra) {
+       service.update(id, guitarra);
     } 
 
     @DELETE

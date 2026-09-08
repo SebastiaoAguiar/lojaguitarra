@@ -1,4 +1,4 @@
-package br.unitins.tp1.model;
+package br.unitins.lojaguitarra.model;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
