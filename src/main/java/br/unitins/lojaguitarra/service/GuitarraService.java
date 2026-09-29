@@ -2,17 +2,18 @@ package br.unitins.lojaguitarra.service;
 
 import java.util.List;
 
-import br.unitins.lojaguitarra.model.Guitarra;
+import br.unitins.lojaguitarra.dto.GuitarraDTO;
+import br.unitins.lojaguitarra.dto.GuitarraResponseDTO;
 
 public interface GuitarraService {
-    Guitarra create(Guitarra guitarra);
-    void update(Long id, Guitarra guitarra);
+    GuitarraResponseDTO create(GuitarraDTO dto);
+    void update(Long id, GuitarraDTO dto);
     void delete(Long id);
-    Guitarra findById(Long id);
-    List<Guitarra> findByNome(String nome);
-    List<Guitarra> findByMarca(String marca);
-    List<Guitarra> findByModelo(String modelo);
-    List<Guitarra> findByCor(String cor);
-    List<Guitarra> findByPreco(Double min, Double max);
-    List<Guitarra> findAll();
+    GuitarraResponseDTO findById(Long id);
+    List<GuitarraResponseDTO> findByNome(String nome);
+    List<GuitarraResponseDTO> findByMarca(String marca);
+    List<GuitarraResponseDTO> findByModelo(String modelo);
+    List<GuitarraResponseDTO> findByCor(String cor);
+    List<GuitarraResponseDTO> findByPreco(Double min, Double max);
+    List<GuitarraResponseDTO> findAll();
 }

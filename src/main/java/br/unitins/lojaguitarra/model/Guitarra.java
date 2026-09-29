@@ -1,12 +1,18 @@
 package br.unitins.lojaguitarra.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Guitarra extends DefaultEntity {
-    
+
     private String nome;
-    private String marca;
+
+    @ManyToOne
+    @JoinColumn(name = "id_marca")
+    private Marca marca;
+
     private String modelo;
     private String cor;
     private Double preco;
@@ -17,10 +23,10 @@ public class Guitarra extends DefaultEntity {
     public void setNome(String nome) {
         this.nome = nome;
     }
-    public String getMarca() {
+    public Marca getMarca() {
         return marca;
     }
-    public void setMarca(String marca) {
+    public void setMarca(Marca marca) {
         this.marca = marca;
     }
     public String getModelo() {
