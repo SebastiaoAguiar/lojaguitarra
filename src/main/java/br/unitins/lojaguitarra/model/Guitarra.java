@@ -1,11 +1,15 @@
 package br.unitins.lojaguitarra.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+// abstrata: toda guitarra da loja e eletrica, acustica ou eletroacustica
 @Entity
-public class Guitarra extends DefaultEntity {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Guitarra extends DefaultEntity {
 
     private String nome;
 

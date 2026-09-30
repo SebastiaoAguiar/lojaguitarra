@@ -2,24 +2,19 @@ package br.unitins.lojaguitarra.resource;
 
 import java.util.List;
 
-import br.unitins.lojaguitarra.dto.GuitarraDTO;
 import br.unitins.lojaguitarra.dto.GuitarraResponseDTO;
 import br.unitins.lojaguitarra.service.GuitarraService;
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+// listagem polimorfica: traz eletricas, acusticas e eletroacusticas juntas
+// o cadastro e feito nos resources de cada tipo
 @Path("/guitarras")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class GuitarraResource {
 
     @Inject
@@ -64,22 +59,5 @@ public class GuitarraResource {
     @Path("/preco/{min}/{max}")
     public List<GuitarraResponseDTO> buscarPorPreco(@PathParam("min") Double min, @PathParam("max") Double max) {
         return service.findByPreco(min, max);
-    }
-
-    @POST
-    public GuitarraResponseDTO inserir(@Valid GuitarraDTO dto) {
-        return service.create(dto);
-    }
-
-    @PUT
-    @Path("/{id}")
-    public void atualizar(@PathParam("id") Long id, @Valid GuitarraDTO dto) {
-        service.update(id, dto);
-    }
-
-    @DELETE
-    @Path("/{id}")
-    public void excluir(@PathParam("id") Long id) {
-        service.delete(id);
     }
 }

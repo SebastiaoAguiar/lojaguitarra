@@ -1,11 +1,13 @@
 package br.unitins.lojaguitarra.dto;
 
+import br.unitins.lojaguitarra.model.ConfiguracaoCaptadores;
+import br.unitins.lojaguitarra.model.TipoPonte;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-public record GuitarraDTO(
+public record GuitarraEletricaDTO(
     @NotBlank(message = "O nome deve ser informado.")
     @Size(min = 2, max = 60, message = "O nome deve ter entre 2 e 60 caracteres.")
     String nome,
@@ -24,6 +26,15 @@ public record GuitarraDTO(
 
     @NotNull(message = "O preco deve ser informado.")
     @Positive(message = "O preco deve ser maior que zero.")
-    Double preco
+    Double preco,
+
+    @NotNull(message = "A configuracao de captadores deve ser informada.")
+    ConfiguracaoCaptadores configuracaoCaptadores,
+
+    @NotNull(message = "Informe se a captacao e ativa.")
+    Boolean captacaoAtiva,
+
+    @NotNull(message = "O tipo de ponte deve ser informado.")
+    TipoPonte tipoPonte
 ) {
 }
