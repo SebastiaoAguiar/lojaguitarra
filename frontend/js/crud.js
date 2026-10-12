@@ -19,6 +19,8 @@ async function loadOptions(fields, opts) {
   return opts;
 }
 
+const BOOL_OPTIONS = [{ value: 'true', label: 'Sim' }, { value: 'false', label: 'Não' }];
+
 function inputHtml(f, value, attr, opts) {
   const required = f.required === false ? '' : 'required';
   const common = attr + '="' + f.name + '" ' + required +
@@ -26,8 +28,9 @@ function inputHtml(f, value, attr, opts) {
     (f.pattern ? ' pattern="' + f.pattern + '"' : '') +
     (f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '');
 
-  if (f.type === 'select') {
-    const options = (opts[f.name] || []).map((o) =>
+  if (f.type === 'select' || f.type === 'bool') {
+    const list = f.type === 'bool' ? BOOL_OPTIONS : (opts[f.name] || []);
+    const options = list.map((o) =>
       '<option value="' + esc(o.value) + '"' + (String(o.value) === String(value ?? '') ? ' selected' : '') + '>' +
       esc(o.label) + '</option>').join('');
     return '<select class="form-select" ' + common + '><option value="">Selecione...</option>' + options + '</select>';
@@ -86,6 +89,7 @@ function fieldHtml(f, value, opts) {
 
 function readScalar(f, el) {
   let v = el.value.trim();
+  if (f.type === 'bool') return v === '' ? null : v === 'true';
   if (f.type === 'number' || f.numeric) return v === '' ? null : Number(v);
   if (v === '' && f.required === false) return null;
   return v;
@@ -192,7 +196,14 @@ async function renderCrud(cfg) {
     '<div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">' +
       '<div><h2 class="mb-0"><i class="bi ' + cfg.icon + ' me-2 accent"></i>' + esc(cfg.title) + '</h2>' +
       '<p class="text-muted mb-0">' + esc(cfg.subtitle) + '</p></div>' +
-      '<button class="btn btn-accent" id="btnNovo"><i class="bi bi-plus-lg"></i> Novo(a) ' + esc(cfg.singular) + '</button>' +
+      (cfg.variants
+        // varias especializacoes (heranca): o usuario escolhe o tipo ao criar
+        ? '<div class="dropdown"><button class="btn btn-accent dropdown-toggle" data-bs-toggle="dropdown">' +
+          '<i class="bi bi-plus-lg"></i> Nova ' + esc(cfg.singular) + '</button><ul class="dropdown-menu dropdown-menu-end">' +
+          Object.entries(cfg.variants).map(([key, v]) =>
+            '<li><a class="dropdown-item" href="#" data-new="' + key + '">' + esc(v.label) + '</a></li>').join('') +
+          '</ul></div>'
+        : '<button class="btn btn-accent" id="btnNovo"><i class="bi bi-plus-lg"></i> Novo(a) ' + esc(cfg.singular) + '</button>') +
     '</div>' +
     (searches.length
       ? '<div class="card shadow-sm mb-3"><div class="card-body"><form id="searchForm" class="row g-2 align-items-end"></form></div></div>'
@@ -271,7 +282,17 @@ async function renderCrud(cfg) {
     });
   }
 
-  document.getElementById('btnNovo').addEventListener('click', () => openForm(cfg, null, load));
+  if (cfg.variants) {
+    document.querySelectorAll('[data-new]').forEach((a) => a.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      openForm(cfg.variants[a.dataset.new], null, load);
+    }));
+  } else {
+    document.getElementById('btnNovo').addEventListener('click', () => openForm(cfg, null, load));
+  }
+
+  // com variantes (heranca), cada registro e editado/excluido pelo endpoint do seu tipo
+  const target = (item) => (cfg.variants ? cfg.variants[cfg.variantOf(item)] : cfg);
 
   tbody.addEventListener('click', async (ev) => {
     const edit = ev.target.closest('[data-edit]');
@@ -279,8 +300,9 @@ async function renderCrud(cfg) {
     if (edit) {
       // busca o registro completo na API para editar com dados atuais
       try {
-        const full = await api('GET', cfg.endpoint + '/' + edit.dataset.edit);
-        openForm(cfg, full, load);
+        const t = target(items.find((i) => String(i.id) === edit.dataset.edit));
+        const full = await api('GET', t.endpoint + '/' + edit.dataset.edit);
+        openForm(t, full, load);
       } catch (e) {
         toast(e.message, 'danger');
       }
@@ -289,7 +311,7 @@ async function renderCrud(cfg) {
       const ok = await confirmDialog('Excluir ' + cfg.singular.toLowerCase() + ' "' + cfg.label(item) + '"? Essa ação não pode ser desfeita.');
       if (!ok) return;
       try {
-        await api('DELETE', cfg.endpoint + '/' + del.dataset.del);
+        await api('DELETE', target(item).endpoint + '/' + del.dataset.del);
         toast(cfg.singular + ' excluído(a).');
         load();
       } catch (e) {

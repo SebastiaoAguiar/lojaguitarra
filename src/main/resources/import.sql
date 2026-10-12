@@ -1,10 +1,10 @@
--- Estados (idregiao: 1 Centro-Oeste, 2 Nordeste, 3 Norte, 4 Sudeste, 5 Sul)
-insert into estado (nome, sigla, idregiao) values('Tocantins', 'TO', 3);
-insert into estado (nome, sigla, idregiao) values('Goias', 'GO', 1);
-insert into estado (nome, sigla, idregiao) values('Rio de Janeiro', 'RJ', 4);
-insert into estado (nome, sigla, idregiao) values('Sao Paulo', 'SP', 4);
-insert into estado (nome, sigla, idregiao) values('Bahia', 'BA', 2);
-insert into estado (nome, sigla, idregiao) values('Parana', 'PR', 5);
+-- Estados (id_regiao: 1 Centro-Oeste, 2 Nordeste, 3 Norte, 4 Sudeste, 5 Sul)
+insert into estado (nome, sigla, id_regiao) values('Tocantins', 'TO', 3);
+insert into estado (nome, sigla, id_regiao) values('Goias', 'GO', 1);
+insert into estado (nome, sigla, id_regiao) values('Rio de Janeiro', 'RJ', 4);
+insert into estado (nome, sigla, id_regiao) values('Sao Paulo', 'SP', 4);
+insert into estado (nome, sigla, id_regiao) values('Bahia', 'BA', 2);
+insert into estado (nome, sigla, id_regiao) values('Parana', 'PR', 5);
 
 -- Municipios
 insert into municipio (nome, id_estado) values('Palmas', 1);
@@ -16,32 +16,44 @@ insert into municipio (nome, id_estado) values('Campinas', 4);
 insert into municipio (nome, id_estado) values('Salvador', 5);
 insert into municipio (nome, id_estado) values('Curitiba', 6);
 
--- Marcas
-insert into marca (nome, pais_origem) values('Fender', 'Estados Unidos');
-insert into marca (nome, pais_origem) values('Gibson', 'Estados Unidos');
-insert into marca (nome, pais_origem) values('Epiphone', 'Estados Unidos');
-insert into marca (nome, pais_origem) values('Ibanez', 'Japao');
-insert into marca (nome, pais_origem) values('PRS', 'Estados Unidos');
+-- Marcas (ids gerados na ordem de insercao)
+insert into marca (nome, pais_origem) values('Fender', 'Estados Unidos');   -- 1
+insert into marca (nome, pais_origem) values('Gibson', 'Estados Unidos');   -- 2
+insert into marca (nome, pais_origem) values('Epiphone', 'Estados Unidos'); -- 3
+insert into marca (nome, pais_origem) values('Ibanez', 'Japao');            -- 4
+insert into marca (nome, pais_origem) values('PRS', 'Estados Unidos');      -- 5
+insert into marca (nome, pais_origem) values('Martin', 'Estados Unidos');   -- 6
+insert into marca (nome, pais_origem) values('Yamaha', 'Japao');            -- 7
+insert into marca (nome, pais_origem) values('Taylor', 'Estados Unidos');   -- 8
+insert into marca (nome, pais_origem) values('Takamine', 'Japao');          -- 9
 
--- Captadores
-insert into captador (nome, tipo) values('Fender Vintage Noiseless', 'Single Coil');
-insert into captador (nome, tipo) values('Fender Texas Special', 'Single Coil');
-insert into captador (nome, tipo) values('Seymour Duncan JB', 'Humbucker');
-insert into captador (nome, tipo) values('Gibson 490R', 'Humbucker');
-insert into captador (nome, tipo) values('Gibson 498T', 'Humbucker');
-insert into captador (nome, tipo) values('Gibson P-90', 'P-90');
+-- Captadores (usados pelas guitarras eletricas, N:N)
+insert into captador (nome, tipo) values('Fender Vintage Noiseless', 'Single Coil'); -- 1
+insert into captador (nome, tipo) values('Fender Texas Special', 'Single Coil');     -- 2
+insert into captador (nome, tipo) values('Seymour Duncan JB', 'Humbucker');          -- 3
+insert into captador (nome, tipo) values('Gibson 490R', 'Humbucker');                -- 4
+insert into captador (nome, tipo) values('Gibson 498T', 'Humbucker');                -- 5
+insert into captador (nome, tipo) values('Gibson P-90', 'P-90');                     -- 6
 
--- Especificacoes (uma por guitarra, na mesma ordem)
-insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Stratocaster', 'Amieiro', 'Maple', 21);
-insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Les Paul', 'Mogno', 'Ebano', 22);
-insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('SG', 'Mogno', 'Louro', 22);
-insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Telecaster', 'Freixo', 'Maple', 21);
-insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Superstrat', 'Tilia', 'Jatoba', 24);
-insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Explorer', 'Mogno', 'Ebano', 22);
-insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Jazzmaster', 'Amieiro', 'Pau-ferro', 22);
-insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Double Cut', 'Mogno', 'Pau-ferro', 24);
+-- Especificacoes (composicao 1:1: uma por guitarra, na mesma ordem das guitarras)
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Stratocaster', 'Amieiro', 'Maple', 21);       -- 1
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Les Paul', 'Mogno', 'Ebano', 22);             -- 2
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('SG', 'Mogno', 'Louro', 22);                   -- 3
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Telecaster', 'Freixo', 'Maple', 21);          -- 4
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Superstrat', 'Tilia', 'Jatoba', 24);          -- 5
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Explorer', 'Mogno', 'Ebano', 22);             -- 6
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Jazzmaster', 'Amieiro', 'Pau-ferro', 22);     -- 7
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Double Cut', 'Mogno', 'Pau-ferro', 24);       -- 8
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Dreadnought', 'Abeto', 'Pau-ferro', 20);     -- 9
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Classico', 'Cedro', 'Pau-ferro', 19);        -- 10
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Grand Auditorium', 'Abeto', 'Ebano', 20);    -- 11
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Dreadnought', 'Abeto', 'Ebano', 20);         -- 12
+insert into especificacao (formato_corpo, madeira_corpo, madeira_escala, numero_trastes) values('Thinline', 'Meranti', 'Pau-ferro', 20);      -- 13
 
--- Guitarras
+-- Heranca JOINED: cada guitarra tem uma linha em "guitarra" (dados comuns)
+-- e uma linha na tabela da subclasse com o MESMO id (dados especificos)
+
+-- guitarras eletricas (ids 1 a 8)
 insert into guitarra (nome, id_marca, modelo, cor, preco, id_especificacao) values('Stratocaster', 1, 'Player', 'Sunburst', 6500.00, 1);
 insert into guitarra (nome, id_marca, modelo, cor, preco, id_especificacao) values('Les Paul', 2, 'Standard 60s', 'Preta', 18500.00, 2);
 insert into guitarra (nome, id_marca, modelo, cor, preco, id_especificacao) values('SG', 3, 'Standard', 'Vermelha', 4200.00, 3);
@@ -51,7 +63,16 @@ insert into guitarra (nome, id_marca, modelo, cor, preco, id_especificacao) valu
 insert into guitarra (nome, id_marca, modelo, cor, preco, id_especificacao) values('Jazzmaster', 1, 'Player', 'Azul', 7800.00, 7);
 insert into guitarra (nome, id_marca, modelo, cor, preco, id_especificacao) values('PRS SE', 5, 'Custom 24', 'Vinho', 9500.00, 8);
 
--- Guitarra x Captador (N:N)
+insert into guitarra_eletrica (id, configuracao_captadores, captacao_ativa, tipo_ponte) values(1, 'SSS', false, 'TREMOLO');
+insert into guitarra_eletrica (id, configuracao_captadores, captacao_ativa, tipo_ponte) values(2, 'HH', false, 'FIXA');
+insert into guitarra_eletrica (id, configuracao_captadores, captacao_ativa, tipo_ponte) values(3, 'HH', false, 'FIXA');
+insert into guitarra_eletrica (id, configuracao_captadores, captacao_ativa, tipo_ponte) values(4, 'SS', false, 'FIXA');
+insert into guitarra_eletrica (id, configuracao_captadores, captacao_ativa, tipo_ponte) values(5, 'HSH', false, 'FLOYD_ROSE');
+insert into guitarra_eletrica (id, configuracao_captadores, captacao_ativa, tipo_ponte) values(6, 'HH', false, 'FIXA');
+insert into guitarra_eletrica (id, configuracao_captadores, captacao_ativa, tipo_ponte) values(7, 'SS', false, 'TREMOLO');
+insert into guitarra_eletrica (id, configuracao_captadores, captacao_ativa, tipo_ponte) values(8, 'HH', false, 'TREMOLO');
+
+-- Guitarra eletrica x Captador (N:N)
 insert into guitarra_captador (id_guitarra, id_captador) values(1, 1);
 insert into guitarra_captador (id_guitarra, id_captador) values(2, 4);
 insert into guitarra_captador (id_guitarra, id_captador) values(2, 5);
@@ -63,7 +84,23 @@ insert into guitarra_captador (id_guitarra, id_captador) values(7, 6);
 insert into guitarra_captador (id_guitarra, id_captador) values(8, 3);
 insert into guitarra_captador (id_guitarra, id_captador) values(8, 4);
 
--- Pessoas (herenca JOINED: pessoa + tabela filha com o mesmo id)
+-- guitarras acusticas (ids 9 e 10)
+insert into guitarra (nome, id_marca, modelo, cor, preco, id_especificacao) values('D-28', 6, 'Standard', 'Natural', 22000.00, 9);
+insert into guitarra (nome, id_marca, modelo, cor, preco, id_especificacao) values('C40', 7, 'Classica', 'Natural', 900.00, 10);
+
+insert into guitarra_acustica (id, tipo_tampo, tipo_corda, cutaway) values(9, 'MACICO', 'ACO', false);
+insert into guitarra_acustica (id, tipo_tampo, tipo_corda, cutaway) values(10, 'LAMINADO', 'NYLON', false);
+
+-- guitarras eletroacusticas (ids 11 a 13)
+insert into guitarra (nome, id_marca, modelo, cor, preco, id_especificacao) values('214ce', 8, 'Grand Auditorium', 'Natural', 12500.00, 11);
+insert into guitarra (nome, id_marca, modelo, cor, preco, id_especificacao) values('GD30CE', 9, 'Dreadnought', 'Preta', 3200.00, 12);
+insert into guitarra (nome, id_marca, modelo, cor, preco, id_especificacao) values('APX600', 7, 'Thinline', 'Sunburst', 2100.00, 13);
+
+insert into guitarra_eletroacustica (id, tipo_tampo, cutaway, tipo_captacao, afinador_embutido, bandas_equalizador) values(11, 'MACICO', true, 'PIEZO', false, 2);
+insert into guitarra_eletroacustica (id, tipo_tampo, cutaway, tipo_captacao, afinador_embutido, bandas_equalizador) values(12, 'MACICO', true, 'PIEZO', true, 3);
+insert into guitarra_eletroacustica (id, tipo_tampo, cutaway, tipo_captacao, afinador_embutido, bandas_equalizador) values(13, 'LAMINADO', true, 'PIEZO', true, 3);
+
+-- Pessoas (heranca JOINED: pessoa + tabela filha com o mesmo id)
 insert into pessoa (nome, cpf, email) values('Ana Clara Souza', '12345678901', 'ana.clara@email.com');
 insert into pessoa (nome, cpf, email) values('Bruno Martins Lima', '12345678902', 'bruno.martins@email.com');
 insert into pessoa (nome, cpf, email) values('Carla Fernanda Alves', '12345678903', 'carla.alves@email.com');

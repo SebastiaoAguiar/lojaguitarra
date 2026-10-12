@@ -16,6 +16,38 @@ const nomeSearch = (path) => ({
 const optionsFrom = (path, label) => async () =>
   (await api('GET', path)).map((o) => ({ value: o.id, label: label(o) }));
 
+// ---- opcoes dos enums das guitarras (valores iguais aos enums do backend) ----
+const enumOptions = (pairs) => pairs.map(([value, label]) => ({ value, label }));
+const CONFIG_CAPTADORES = enumOptions([['H', 'H'], ['HH', 'HH'], ['SS', 'SS'], ['SSS', 'SSS'], ['HSS', 'HSS'], ['HSH', 'HSH']]);
+const TIPOS_PONTE = enumOptions([['FIXA', 'Fixa'], ['TREMOLO', 'Tremolo'], ['FLOYD_ROSE', 'Floyd Rose']]);
+const TIPOS_TAMPO = enumOptions([['MACICO', 'Maciço'], ['LAMINADO', 'Laminado']]);
+const TIPOS_CORDA = enumOptions([['ACO', 'Aço'], ['NYLON', 'Nylon']]);
+const TIPOS_CAPTACAO = enumOptions([['PIEZO', 'Piezo'], ['MICROFONE', 'Microfone'], ['PIEZO_MICROFONE', 'Piezo + microfone']]);
+const TIPO_GUITARRA = { ELETRICA: 'Elétrica', ACUSTICA: 'Acústica', ELETROACUSTICA: 'Eletroacústica' };
+
+// campos comuns a qualquer guitarra (dados da classe base + especificacao 1:1) + os do tipo
+function guitarraFields(especificos) {
+  return [
+    { name: 'nome', label: 'Nome', type: 'text', col: 6 },
+    { name: 'idMarca', label: 'Marca', type: 'select', col: 6, numeric: true, options: optionsFrom('/marcas', (m) => m.nome) },
+    { name: 'modelo', label: 'Modelo', type: 'text', col: 4 },
+    { name: 'cor', label: 'Cor', type: 'text', col: 4 },
+    { name: 'preco', label: 'Preço (R$)', type: 'number', col: 4, step: 0.01, min: 0.01 },
+    { name: 'especificacao', label: 'Especificação', type: 'group', fields: [
+      { name: 'formatoCorpo', label: 'Formato do corpo', type: 'text', col: 6 },
+      { name: 'madeiraCorpo', label: 'Madeira do corpo', type: 'text', col: 6 },
+      { name: 'madeiraEscala', label: 'Madeira da escala', type: 'text', col: 6 },
+      { name: 'numeroTrastes', label: 'Nº de trastes', type: 'number', col: 6, min: 18, max: 30 },
+    ] },
+    ...especificos,
+  ];
+}
+
+// valores iniciais comuns na edicao (resposta da API -> formato do formulario)
+function guitarraBase(i) {
+  return { nome: i.nome, idMarca: i.marca.id, modelo: i.modelo, cor: i.cor, preco: i.preco, especificacao: i.especificacao };
+}
+
 const ENTITIES = {
   estados: {
     title: 'Estados', singular: 'Estado', icon: 'bi-map', endpoint: '/estados',
@@ -86,15 +118,61 @@ const ENTITIES = {
 
   guitarras: {
     title: 'Guitarras', singular: 'Guitarra', icon: 'bi-vinyl', endpoint: '/guitarras',
-    subtitle: 'Catálogo com marca, especificação (1:1, composição) e captadores (N:N).',
+    subtitle: 'Catálogo em 3 tipos (herança): elétrica, acústica e eletroacústica. Todas com especificação (1:1).',
     label: (i) => i.nome,
+    // heranca: cada tipo tem seu proprio endpoint, campos e regras
+    variantOf: (i) => i.tipo,
+    variants: {
+      ELETRICA: {
+        label: 'Guitarra elétrica', singular: 'Guitarra elétrica', endpoint: '/guitarras-eletricas',
+        fields: guitarraFields([
+          { name: 'configuracaoCaptadores', label: 'Configuração dos captadores', type: 'select', col: 4, options: CONFIG_CAPTADORES },
+          { name: 'captacaoAtiva', label: 'Captação ativa', type: 'bool', col: 4 },
+          { name: 'tipoPonte', label: 'Tipo de ponte', type: 'select', col: 4, options: TIPOS_PONTE },
+          { name: 'idsCaptadores', label: 'Captadores (N:N)', type: 'checks',
+            options: optionsFrom('/captadores', (c) => c.nome + ' — ' + c.tipo) },
+        ]),
+        get: (i) => ({
+          ...guitarraBase(i),
+          configuracaoCaptadores: i.configuracaoCaptadores, captacaoAtiva: i.captacaoAtiva, tipoPonte: i.tipoPonte,
+          idsCaptadores: i.captadores.map((c) => c.id),
+        }),
+      },
+      ACUSTICA: {
+        label: 'Guitarra acústica', singular: 'Guitarra acústica', endpoint: '/guitarras-acusticas',
+        fields: guitarraFields([
+          { name: 'tipoTampo', label: 'Tipo de tampo', type: 'select', col: 4, options: TIPOS_TAMPO },
+          { name: 'tipoCorda', label: 'Tipo de corda', type: 'select', col: 4, options: TIPOS_CORDA },
+          { name: 'cutaway', label: 'Cutaway', type: 'bool', col: 4 },
+        ]),
+        get: (i) => ({ ...guitarraBase(i), tipoTampo: i.tipoTampo, tipoCorda: i.tipoCorda, cutaway: i.cutaway }),
+      },
+      ELETROACUSTICA: {
+        label: 'Guitarra eletroacústica', singular: 'Guitarra eletroacústica', endpoint: '/guitarras-eletroacusticas',
+        fields: guitarraFields([
+          { name: 'tipoTampo', label: 'Tipo de tampo', type: 'select', col: 3, options: TIPOS_TAMPO },
+          { name: 'cutaway', label: 'Cutaway', type: 'bool', col: 3 },
+          { name: 'tipoCaptacao', label: 'Tipo de captação', type: 'select', col: 3, options: TIPOS_CAPTACAO },
+          { name: 'afinadorEmbutido', label: 'Afinador embutido', type: 'bool', col: 3 },
+          { name: 'bandasEqualizador', label: 'Bandas do equalizador', type: 'number', col: 4, min: 0, max: 10 },
+        ]),
+        get: (i) => ({
+          ...guitarraBase(i),
+          tipoTampo: i.tipoTampo, cutaway: i.cutaway, tipoCaptacao: i.tipoCaptacao,
+          afinadorEmbutido: i.afinadorEmbutido, bandasEqualizador: i.bandasEqualizador,
+        }),
+      },
+    },
     columns: [
       { label: 'Nome', render: (i) => '<strong>' + esc(i.nome) + '</strong><div class="small text-muted">' + esc(i.modelo) + '</div>' },
+      { label: 'Tipo', render: (i) => '<span class="badge text-bg-dark">' + esc(TIPO_GUITARRA[i.tipo] || i.tipo) + '</span>' },
       { label: 'Marca', render: (i) => esc(i.marca.nome) },
       { label: 'Cor', render: (i) => esc(i.cor) },
       { label: 'Preço', render: (i) => formatBRL(i.preco) },
       { label: 'Corpo', render: (i) => esc(i.especificacao.formatoCorpo) + '<div class="small text-muted">' + esc(i.especificacao.numeroTrastes) + ' trastes</div>' },
-      { label: 'Captadores', render: (i) => i.captadores.map((c) => '<span class="badge badge-soft me-1">' + esc(c.nome) + '</span>').join('') },
+      { label: 'Captadores', render: (i) => i.captadores.length
+          ? i.captadores.map((c) => '<span class="badge badge-soft me-1">' + esc(c.nome) + '</span>').join('')
+          : '<span class="text-muted">—</span>' },
     ],
     searches: [
       nomeSearch('/guitarras/search'),
@@ -104,26 +182,6 @@ const ENTITIES = {
       { key: 'preco', label: 'Faixa de preço', path: '/guitarras/search/preco',
         params: [{ name: 'min', label: 'Mínimo (R$)', type: 'number' }, { name: 'max', label: 'Máximo (R$)', type: 'number' }] },
     ],
-    fields: [
-      { name: 'nome', label: 'Nome', type: 'text', col: 6 },
-      { name: 'idMarca', label: 'Marca', type: 'select', col: 6, numeric: true, options: optionsFrom('/marcas', (m) => m.nome) },
-      { name: 'modelo', label: 'Modelo', type: 'text', col: 4 },
-      { name: 'cor', label: 'Cor', type: 'text', col: 4 },
-      { name: 'preco', label: 'Preço (R$)', type: 'number', col: 4, step: 0.01, min: 0.01 },
-      { name: 'especificacao', label: 'Especificação', type: 'group', fields: [
-        { name: 'formatoCorpo', label: 'Formato do corpo', type: 'text', col: 6 },
-        { name: 'madeiraCorpo', label: 'Madeira do corpo', type: 'text', col: 6 },
-        { name: 'madeiraEscala', label: 'Madeira da escala', type: 'text', col: 6 },
-        { name: 'numeroTrastes', label: 'Nº de trastes', type: 'number', col: 6, min: 18, max: 30 },
-      ] },
-      { name: 'idsCaptadores', label: 'Captadores', type: 'checks',
-        options: optionsFrom('/captadores', (c) => c.nome + ' — ' + c.tipo) },
-    ],
-    get: (i) => ({
-      nome: i.nome, idMarca: i.marca.id, modelo: i.modelo, cor: i.cor, preco: i.preco,
-      especificacao: i.especificacao,
-      idsCaptadores: i.captadores.map((c) => c.id),
-    }),
   },
 
   clientes: {

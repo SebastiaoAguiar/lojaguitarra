@@ -25,10 +25,11 @@ async function renderHome() {
       '<div class="table-responsive"><table class="table table-sm align-middle mb-0">' +
       '<thead><tr><th>Tipo</th><th>Entidades</th><th>Cardinalidade</th></tr></thead><tbody>' +
         '<tr><td><span class="badge text-bg-dark">Herança</span></td><td>Pessoa → Cliente, Luthier</td><td>—</td></tr>' +
+        '<tr><td><span class="badge text-bg-dark">Herança</span></td><td>Guitarra → Elétrica, Acústica, Eletroacústica</td><td>—</td></tr>' +
         '<tr><td><span class="badge text-bg-dark">Composição</span></td><td>Cliente → Endereço</td><td>1:N</td></tr>' +
         '<tr><td><span class="badge text-bg-dark">Composição</span></td><td>Guitarra → Especificação</td><td>1:1</td></tr>' +
         '<tr><td><span class="badge text-bg-dark">Agregação</span></td><td>Marca → Guitarra</td><td>1:N</td></tr>' +
-        '<tr><td><span class="badge text-bg-dark">Associação</span></td><td>Guitarra ↔ Captador</td><td>N:N</td></tr>' +
+        '<tr><td><span class="badge text-bg-dark">Associação</span></td><td>Guitarra Elétrica ↔ Captador</td><td>N:N</td></tr>' +
         '<tr><td><span class="badge text-bg-dark">Associação</span></td><td>Endereço → Município → Estado</td><td>N:1</td></tr>' +
       '</tbody></table></div>' +
     '</div></div>';

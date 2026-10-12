@@ -1,15 +1,14 @@
 package br.unitins.lojaguitarra.dto;
 
-import java.util.List;
-
+import br.unitins.lojaguitarra.model.TipoCorda;
+import br.unitins.lojaguitarra.model.TipoTampo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-public record GuitarraDTO(
+public record GuitarraAcusticaDTO(
     @NotBlank(message = "O nome deve ser informado.")
     @Size(min = 2, max = 60, message = "O nome deve ter entre 2 e 60 caracteres.")
     String nome,
@@ -34,6 +33,13 @@ public record GuitarraDTO(
     @Valid
     EspecificacaoDTO especificacao,
 
-    @NotEmpty(message = "Informe ao menos um captador.")
-    List<@NotNull(message = "Captador invalido.") @Positive(message = "Captador invalido.") Long> idsCaptadores) {
+    @NotNull(message = "O tipo de tampo deve ser informado.")
+    TipoTampo tipoTampo,
+
+    @NotNull(message = "O tipo de corda deve ser informado.")
+    TipoCorda tipoCorda,
+
+    @NotNull(message = "Informe se a guitarra possui cutaway.")
+    Boolean cutaway
+) {
 }

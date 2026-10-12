@@ -4,10 +4,9 @@ import java.util.List;
 
 import br.unitins.lojaguitarra.model.Guitarra;
 
+// consulta polimorfica: devolve eletricas, acusticas e eletroacusticas juntas
+// (o cadastro, a edicao e a exclusao ficam nos services de cada tipo)
 public interface GuitarraService {
-    Guitarra create(Guitarra guitarra);
-    void update(Long id, Guitarra guitarra);
-    void delete(Long id);
     Guitarra findById(Long id);
     List<Guitarra> findByNome(String nome);
     List<Guitarra> findByMarca(String marca);

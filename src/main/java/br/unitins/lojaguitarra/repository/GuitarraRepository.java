@@ -35,7 +35,7 @@ public class GuitarraRepository implements PanacheRepository<Guitarra> {
 
     public boolean existsByCaptador(Long idCaptador) {
         Long total = getEntityManager()
-                .createQuery("select count(g) from Guitarra g join g.captadores c where c.id = :id", Long.class)
+                .createQuery("select count(g) from GuitarraEletrica g join g.captadores c where c.id = :id", Long.class)
                 .setParameter("id", idCaptador)
                 .getSingleResult();
         return total > 0;

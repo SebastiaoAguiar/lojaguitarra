@@ -1,19 +1,17 @@
 package br.unitins.lojaguitarra.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
+// abstrata: toda guitarra da loja e eletrica, acustica ou eletroacustica
 @Entity
-public class Guitarra extends DefaultEntity {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Guitarra extends DefaultEntity {
 
     private String nome;
 
@@ -30,13 +28,6 @@ public class Guitarra extends DefaultEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "id_especificacao", nullable = false, unique = true)
     private Especificacao especificacao;
-
-    // associacao N:N: um captador pode equipar varias guitarras
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "guitarra_captador",
-            joinColumns = @JoinColumn(name = "id_guitarra"),
-            inverseJoinColumns = @JoinColumn(name = "id_captador"))
-    private List<Captador> captadores = new ArrayList<>();
 
     public String getNome() {
         return nome;
@@ -84,13 +75,5 @@ public class Guitarra extends DefaultEntity {
 
     public void setEspecificacao(Especificacao especificacao) {
         this.especificacao = especificacao;
-    }
-
-    public List<Captador> getCaptadores() {
-        return captadores;
-    }
-
-    public void setCaptadores(List<Captador> captadores) {
-        this.captadores = captadores;
     }
 }
