@@ -2,14 +2,16 @@ package br.unitins.lojaguitarra.service;
 
 import java.util.List;
 
-import br.unitins.lojaguitarra.dto.MarcaDTO;
-import br.unitins.lojaguitarra.dto.MarcaResponseDTO;
+import br.unitins.lojaguitarra.exception.BusinessValidationException;
+import br.unitins.lojaguitarra.exception.ViolationDetail;
 import br.unitins.lojaguitarra.model.Marca;
+import br.unitins.lojaguitarra.repository.GuitarraRepository;
 import br.unitins.lojaguitarra.repository.MarcaRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class MarcaServiceImpl implements MarcaService {
@@ -17,49 +19,59 @@ public class MarcaServiceImpl implements MarcaService {
     @Inject
     MarcaRepository repository;
 
+    @Inject
+    GuitarraRepository guitarraRepository;
+
     @Override
     @Transactional
-    public MarcaResponseDTO create(MarcaDTO dto) {
-        Marca marca = new Marca();
-        marca.setNome(dto.nome());
+    public Marca create(Marca marca) {
         repository.persist(marca);
-        return MarcaResponseDTO.fromEntity(marca);
+        return marca;
     }
 
     @Override
     @Transactional
-    public void update(Long id, MarcaDTO dto) {
-        Marca marca = repository.findById(id);
-        if (marca == null) {
-            throw new NotFoundException("Marca não encontrada");
+    public void update(Long id, Marca marca) {
+        Marca novaMarca = repository.findById(id);
+        if (novaMarca == null) {
+            throw new NotFoundException("Marca nao encontrada.");
         }
-        marca.setNome(dto.nome());
+        novaMarca.setNome(marca.getNome());
+        novaMarca.setPaisOrigem(marca.getPaisOrigem());
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        if (!repository.deleteById(id)) {
-            throw new NotFoundException("Marca não encontrada");
+        if (repository.findById(id) == null) {
+            throw new NotFoundException("Marca nao encontrada.");
         }
+        // agregacao: a marca so pode sair se nenhuma guitarra depender dela
+        if (guitarraRepository.existsByMarca(id)) {
+            throw new BusinessValidationException(
+                    Response.Status.CONFLICT,
+                    "Nao e possivel excluir a marca.",
+                    List.of(new ViolationDetail("id", "Existem guitarras cadastradas com esta marca.")));
+        }
+        repository.deleteById(id);
     }
 
     @Override
-    public MarcaResponseDTO findById(Long id) {
+    public Marca findById(Long id) {
         Marca marca = repository.findById(id);
         if (marca == null) {
-            throw new NotFoundException("Marca não encontrada");
+            throw new NotFoundException("Marca nao encontrada.");
         }
-        return MarcaResponseDTO.fromEntity(marca);
+        return marca;
     }
 
     @Override
-    public List<MarcaResponseDTO> findByNome(String nome) {
-        return repository.findByNome(nome).stream().map(MarcaResponseDTO::fromEntity).toList();
+    public List<Marca> findByNome(String nome) {
+        return repository.findByNome(nome);
     }
 
     @Override
-    public List<MarcaResponseDTO> findAll() {
-        return repository.listAll().stream().map(MarcaResponseDTO::fromEntity).toList();
+    public List<Marca> findAll() {
+        return repository.listAll();
     }
 }

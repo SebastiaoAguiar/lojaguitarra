@@ -8,6 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class GuitarraRepository implements PanacheRepository<Guitarra> {
+
     public List<Guitarra> findByNome(String nome) {
         return find("upper(nome) LIKE upper(?1)", "%" + nome + "%").list();
     }
@@ -26,5 +27,17 @@ public class GuitarraRepository implements PanacheRepository<Guitarra> {
 
     public List<Guitarra> findByPreco(Double min, Double max) {
         return find("preco BETWEEN ?1 AND ?2", min, max).list();
+    }
+
+    public boolean existsByMarca(Long idMarca) {
+        return count("marca.id = ?1", idMarca) > 0;
+    }
+
+    public boolean existsByCaptador(Long idCaptador) {
+        Long total = getEntityManager()
+                .createQuery("select count(g) from Guitarra g join g.captadores c where c.id = :id", Long.class)
+                .setParameter("id", idCaptador)
+                .getSingleResult();
+        return total > 0;
     }
 }

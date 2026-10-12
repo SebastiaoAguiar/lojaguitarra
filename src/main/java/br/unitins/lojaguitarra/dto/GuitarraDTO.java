@@ -1,6 +1,10 @@
 package br.unitins.lojaguitarra.dto;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -24,6 +28,12 @@ public record GuitarraDTO(
 
     @NotNull(message = "O preco deve ser informado.")
     @Positive(message = "O preco deve ser maior que zero.")
-    Double preco
-) {
+    Double preco,
+
+    @NotNull(message = "A especificacao deve ser informada.")
+    @Valid
+    EspecificacaoDTO especificacao,
+
+    @NotEmpty(message = "Informe ao menos um captador.")
+    List<@NotNull(message = "Captador invalido.") @Positive(message = "Captador invalido.") Long> idsCaptadores) {
 }

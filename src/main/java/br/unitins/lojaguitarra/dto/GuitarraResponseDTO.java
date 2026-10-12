@@ -1,5 +1,7 @@
 package br.unitins.lojaguitarra.dto;
 
+import java.util.List;
+
 import br.unitins.lojaguitarra.model.Guitarra;
 
 public record GuitarraResponseDTO(
@@ -8,8 +10,10 @@ public record GuitarraResponseDTO(
     MarcaResponseDTO marca,
     String modelo,
     String cor,
-    Double preco
-) {
+    Double preco,
+    EspecificacaoResponseDTO especificacao,
+    List<CaptadorResponseDTO> captadores) {
+
     public static GuitarraResponseDTO fromEntity(Guitarra guitarra) {
         return new GuitarraResponseDTO(
             guitarra.getId(),
@@ -17,7 +21,8 @@ public record GuitarraResponseDTO(
             MarcaResponseDTO.fromEntity(guitarra.getMarca()),
             guitarra.getModelo(),
             guitarra.getCor(),
-            guitarra.getPreco()
-        );
+            guitarra.getPreco(),
+            EspecificacaoResponseDTO.fromEntity(guitarra.getEspecificacao()),
+            guitarra.getCaptadores().stream().map(CaptadorResponseDTO::fromEntity).toList());
     }
 }

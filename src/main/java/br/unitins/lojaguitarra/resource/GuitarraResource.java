@@ -1,10 +1,17 @@
 package br.unitins.lojaguitarra.resource;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import br.unitins.lojaguitarra.dto.EspecificacaoDTO;
 import br.unitins.lojaguitarra.dto.GuitarraDTO;
 import br.unitins.lojaguitarra.dto.GuitarraResponseDTO;
+import br.unitins.lojaguitarra.model.Captador;
+import br.unitins.lojaguitarra.model.Especificacao;
+import br.unitins.lojaguitarra.model.Guitarra;
+import br.unitins.lojaguitarra.service.CaptadorService;
 import br.unitins.lojaguitarra.service.GuitarraService;
+import br.unitins.lojaguitarra.service.MarcaService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -15,7 +22,9 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/guitarras")
 @Produces(MediaType.APPLICATION_JSON)
@@ -25,61 +34,110 @@ public class GuitarraResource {
     @Inject
     GuitarraService service;
 
+    @Inject
+    MarcaService marcaService;
+
+    @Inject
+    CaptadorService captadorService;
+
     @GET
-    public List<GuitarraResponseDTO> listar() {
-        return service.findAll();
+    public Response listar() {
+        return Response.ok(service.findAll().stream()
+                .map(GuitarraResponseDTO::fromEntity)
+                .toList()).build();
     }
 
     @GET
     @Path("/{id}")
-    public GuitarraResponseDTO buscarPorId(@PathParam("id") Long id) {
-        return service.findById(id);
+    public Response buscarPorId(@PathParam("id") Long id) {
+        return Response.ok(GuitarraResponseDTO.fromEntity(service.findById(id))).build();
     }
 
     @GET
-    @Path("/nome/{nome}")
-    public List<GuitarraResponseDTO> buscarPorNome(@PathParam("nome") String nome) {
-        return service.findByNome(nome);
+    @Path("/search")
+    public Response buscarPorNome(@QueryParam("nome") String nome) {
+        return Response.ok(service.findByNome(nome).stream()
+                .map(GuitarraResponseDTO::fromEntity)
+                .toList()).build();
     }
 
     @GET
-    @Path("/marca/{marca}")
-    public List<GuitarraResponseDTO> buscarPorMarca(@PathParam("marca") String marca) {
-        return service.findByMarca(marca);
+    @Path("/search/marca")
+    public Response buscarPorMarca(@QueryParam("nome") String marca) {
+        return Response.ok(service.findByMarca(marca).stream()
+                .map(GuitarraResponseDTO::fromEntity)
+                .toList()).build();
     }
 
     @GET
-    @Path("/modelo/{modelo}")
-    public List<GuitarraResponseDTO> buscarPorModelo(@PathParam("modelo") String modelo) {
-        return service.findByModelo(modelo);
+    @Path("/search/modelo")
+    public Response buscarPorModelo(@QueryParam("modelo") String modelo) {
+        return Response.ok(service.findByModelo(modelo).stream()
+                .map(GuitarraResponseDTO::fromEntity)
+                .toList()).build();
     }
 
     @GET
-    @Path("/cor/{cor}")
-    public List<GuitarraResponseDTO> buscarPorCor(@PathParam("cor") String cor) {
-        return service.findByCor(cor);
+    @Path("/search/cor")
+    public Response buscarPorCor(@QueryParam("cor") String cor) {
+        return Response.ok(service.findByCor(cor).stream()
+                .map(GuitarraResponseDTO::fromEntity)
+                .toList()).build();
     }
 
     @GET
-    @Path("/preco/{min}/{max}")
-    public List<GuitarraResponseDTO> buscarPorPreco(@PathParam("min") Double min, @PathParam("max") Double max) {
-        return service.findByPreco(min, max);
+    @Path("/search/preco")
+    public Response buscarPorPreco(@QueryParam("min") Double min, @QueryParam("max") Double max) {
+        return Response.ok(service.findByPreco(min, max).stream()
+                .map(GuitarraResponseDTO::fromEntity)
+                .toList()).build();
     }
 
     @POST
-    public GuitarraResponseDTO inserir(@Valid GuitarraDTO dto) {
-        return service.create(dto);
+    public Response inserir(@Valid GuitarraDTO dto) {
+        return Response.status(Response.Status.CREATED)
+                .entity(GuitarraResponseDTO.fromEntity(service.create(toEntity(dto))))
+                .build();
     }
 
     @PUT
     @Path("/{id}")
-    public void atualizar(@PathParam("id") Long id, @Valid GuitarraDTO dto) {
-        service.update(id, dto);
+    public Response atualizar(@PathParam("id") Long id, @Valid GuitarraDTO dto) {
+        service.update(id, toEntity(dto));
+        return Response.noContent().build();
     }
 
     @DELETE
     @Path("/{id}")
-    public void excluir(@PathParam("id") Long id) {
+    public Response excluir(@PathParam("id") Long id) {
         service.delete(id);
+        return Response.noContent().build();
+    }
+
+    // converte o DTO em entidade, buscando marca e captadores pelo id
+    private Guitarra toEntity(GuitarraDTO dto) {
+        Guitarra guitarra = new Guitarra();
+        guitarra.setNome(dto.nome());
+        guitarra.setMarca(marcaService.findById(dto.idMarca()));
+        guitarra.setModelo(dto.modelo());
+        guitarra.setCor(dto.cor());
+        guitarra.setPreco(dto.preco());
+        guitarra.setEspecificacao(toEspecificacao(dto.especificacao()));
+
+        List<Captador> captadores = new ArrayList<>();
+        for (Long idCaptador : dto.idsCaptadores()) {
+            captadores.add(captadorService.findById(idCaptador));
+        }
+        guitarra.setCaptadores(captadores);
+        return guitarra;
+    }
+
+    private Especificacao toEspecificacao(EspecificacaoDTO dto) {
+        Especificacao especificacao = new Especificacao();
+        especificacao.setFormatoCorpo(dto.formatoCorpo());
+        especificacao.setMadeiraCorpo(dto.madeiraCorpo());
+        especificacao.setMadeiraEscala(dto.madeiraEscala());
+        especificacao.setNumeroTrastes(dto.numeroTrastes());
+        return especificacao;
     }
 }

@@ -1,9 +1,8 @@
 package br.unitins.lojaguitarra.resource;
 
-import java.util.List;
-
 import br.unitins.lojaguitarra.dto.MarcaDTO;
 import br.unitins.lojaguitarra.dto.MarcaResponseDTO;
+import br.unitins.lojaguitarra.model.Marca;
 import br.unitins.lojaguitarra.service.MarcaService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -15,7 +14,9 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/marcas")
 @Produces(MediaType.APPLICATION_JSON)
@@ -26,36 +27,50 @@ public class MarcaResource {
     MarcaService service;
 
     @GET
-    public List<MarcaResponseDTO> listar() {
-        return service.findAll();
+    public Response listar() {
+        return Response.ok(service.findAll().stream()
+                .map(MarcaResponseDTO::fromEntity)
+                .toList()).build();
     }
 
     @GET
     @Path("/{id}")
-    public MarcaResponseDTO buscarPorId(@PathParam("id") Long id) {
-        return service.findById(id);
+    public Response buscarPorId(@PathParam("id") Long id) {
+        return Response.ok(MarcaResponseDTO.fromEntity(service.findById(id))).build();
     }
 
     @GET
-    @Path("/nome/{nome}")
-    public List<MarcaResponseDTO> buscarPorNome(@PathParam("nome") String nome) {
-        return service.findByNome(nome);
+    @Path("/search")
+    public Response buscarPorNome(@QueryParam("nome") String nome) {
+        return Response.ok(service.findByNome(nome).stream()
+                .map(MarcaResponseDTO::fromEntity)
+                .toList()).build();
     }
 
     @POST
-    public MarcaResponseDTO inserir(@Valid MarcaDTO dto) {
-        return service.create(dto);
+    public Response inserir(@Valid MarcaDTO dto) {
+        Marca marca = new Marca();
+        marca.setNome(dto.nome());
+        marca.setPaisOrigem(dto.paisOrigem());
+        return Response.status(Response.Status.CREATED)
+                .entity(MarcaResponseDTO.fromEntity(service.create(marca)))
+                .build();
     }
 
     @PUT
     @Path("/{id}")
-    public void atualizar(@PathParam("id") Long id, @Valid MarcaDTO dto) {
-        service.update(id, dto);
+    public Response atualizar(@PathParam("id") Long id, @Valid MarcaDTO dto) {
+        Marca marca = new Marca();
+        marca.setNome(dto.nome());
+        marca.setPaisOrigem(dto.paisOrigem());
+        service.update(id, marca);
+        return Response.noContent().build();
     }
 
     @DELETE
     @Path("/{id}")
-    public void excluir(@PathParam("id") Long id) {
+    public Response excluir(@PathParam("id") Long id) {
         service.delete(id);
+        return Response.noContent().build();
     }
 }

@@ -2,14 +2,13 @@ package br.unitins.lojaguitarra.service;
 
 import java.util.List;
 
-import br.unitins.lojaguitarra.dto.MarcaDTO;
-import br.unitins.lojaguitarra.dto.MarcaResponseDTO;
+import br.unitins.lojaguitarra.model.Marca;
 
 public interface MarcaService {
-    MarcaResponseDTO create(MarcaDTO dto);
-    void update(Long id, MarcaDTO dto);
+    Marca create(Marca marca);
+    void update(Long id, Marca marca);
     void delete(Long id);
-    MarcaResponseDTO findById(Long id);
-    List<MarcaResponseDTO> findByNome(String nome);
-    List<MarcaResponseDTO> findAll();
+    Marca findById(Long id);
+    List<Marca> findByNome(String nome);
+    List<Marca> findAll();
 }
